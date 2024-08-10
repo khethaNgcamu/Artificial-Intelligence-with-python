@@ -1,10 +1,10 @@
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 import pandas as pd
 
-# Load the Boston Housing dataset
-boston = load_boston()
-boston_df = pd.DataFrame(data=boston.data, columns=boston.feature_names)
-boston_df['MEDV'] = boston.target
+# Load the housing Housing dataset
+housing = fetch_california_housing()
+housing_df = pd.DataFrame(data=housing.data, columns=housing.feature_names)
+housing_df['MEDV'] = housing.target
 
 # Save the dataset to a CSV file
-boston_df.to_csv('boston_housing_dataset.csv', index=False)
+housing_df.to_csv('housing_housing_dataset.csv', index=False)
