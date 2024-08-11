@@ -7,4 +7,4 @@ housing_df = pd.DataFrame(data=housing.data, columns=housing.feature_names)
 housing_df['MEDV'] = housing.target
 
 # Save the dataset to a CSV file
-housing_df.to_csv('housing_housing_dataset.csv', index=False)
+housing_df.to_csv('housing_dataset.csv', index=False)
