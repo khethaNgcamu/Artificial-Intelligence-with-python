@@ -16,7 +16,7 @@ print(data_frame.head())
 data_frame = data_frame.fillna(data_frame.mean())
 
 #Splitting data into features and target
-X = data_frame.drop('species' axis=1)
+X = data_frame.drop('species', axis=1)
 y = data_frame['species']
 
 #Splitting the data into training and testing set
@@ -24,5 +24,19 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 #Feature scalling
 scaler = StandardScaler()
-X_train = scaler.fit_tramsforn(X_train)
+X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
+
+#initiate the model
+knn = KNeighborsClassifier(n_neighbors=5)
+
+#Train the model
+knn.fit(X_train, y_train)
+
+#Make predictions
+y_pred = knn.predict(X_test)
+
+#Evaluate the model
+print("Confusion matrix:\n ", confusion_matrix(y_test, y_pred))
+print("Classification report:\n ", classification_report(y_test, y_pred))
+print("Accuracy score: ", accuracy_score(y_test, y_pred))
