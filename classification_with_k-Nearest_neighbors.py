@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
@@ -40,3 +40,8 @@ y_pred = knn.predict(X_test)
 print("Confusion matrix:\n ", confusion_matrix(y_test, y_pred))
 print("Classification report:\n ", classification_report(y_test, y_pred))
 print("Accuracy score: ", accuracy_score(y_test, y_pred))
+
+# Cross-validation
+cv_scores = cross_val_score(knn, X, y, cv=5)
+print("\nCross-Validation Accuracy:", cv_scores.mean())
+print("Cross-Validation Standard Deviation:", cv_scores.std())
