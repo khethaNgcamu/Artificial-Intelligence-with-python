@@ -1,7 +1,11 @@
+import numpy as py
+import pandas as pd
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+from sklearn import tree
 
 #load dataset
 iris_data = load_iris()
@@ -23,3 +27,9 @@ y_pred = decision_tree.predict(X_test)
 #Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Decision tree accurancy score: {accuracy:.2f}")
+
+#Plot the decision tree
+plt.figure(figsize=(15,10))
+tree.plot_tree(decision_tree, feature_names=iris_data.feature_names, class_names=iris_data.target_names, filled=True, rounded=True)
+plt.title("Decision Tree Visualization")
+plt.show()
