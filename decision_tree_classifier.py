@@ -26,7 +26,7 @@ y_pred = decision_tree.predict(X_test)
 
 #Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
-print(f"Decision tree accurancy score: {accuracy:.2f}")
+print(f"Decision tree accurancy score: {accuracy * 100:.2f}%")
 
 #Plot the decision tree
 plt.figure(figsize=(15,10))
