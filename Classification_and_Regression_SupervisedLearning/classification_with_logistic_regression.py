@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 
 
 # Load dataset
-file_path = 'C:/Users/Khetha/Desktop/Neural-Network-Exercises/iris_dataset.csv'
+file_path = 'iris_dataset.csv'
 df = pd.read_csv(file_path)
 
 # Display the first few rows of the dataset

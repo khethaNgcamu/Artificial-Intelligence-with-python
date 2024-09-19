@@ -68,7 +68,7 @@ data_frame_combined['at_risk'] = data_frame['at_risk']
 # Compare clusters with at_risk label
 risk_comparison = data_frame_combined.groupby('cluster')['at_risk'].mean() * 100
 #print("\n the average at-risk score for students in each cluster:\n",risk_comparison)
-print("\nthe average at-risk score for students in each cluste:")
+print("\nthe average at-risk score for students in each cluster:")
 for cluster, risk in risk_comparison.items():
     print(f"Cluster {cluster}: {risk:.2f}% of students are at risk.")
 
@@ -79,7 +79,7 @@ plt.scatter(data_frame_combined['attendance_rate'], data_frame_combined['test_sc
 
 # Calculate silhouette score to evaluate the clustering quality
 silhouette_avg = silhouette_score(data_scaled, k_means_model.labels_)
-print(f"Silhouette Score: {silhouette_avg:.3f}")
+print(f"Silhouette Score: {silhouette_avg * 100:.2f}%")
 
 plt.xlabel('Attendance Rate')
 plt.ylabel('Test Scores')

@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 #Load dataset
-file_path = 'C:/Users/Khetha/Desktop/Neural-Network-Exercises/iris_dataset.csv'
+file_path = 'iris_dataset.csv'
 data_frame = pd.read_csv(file_path)
 
 #Display the first few rows of the data set
