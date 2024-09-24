@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse import csr_matrix
 
 # Step 1: Load the Datasets
 # Replace these paths with the actual paths to your downloaded CSV files
@@ -35,8 +36,9 @@ merged_df.dropna(inplace=True)
 merged_df['Year'] = pd.to_numeric(merged_df['Year'], errors='coerce')
 merged_df['Rating'] = pd.to_numeric(merged_df['Rating'], errors='coerce')
 
-# Step 7: Filter to Include Only Popular Books (Books with at least 10 ratings)
-popular_books = merged_df.groupby('Title').filter(lambda x: x['Rating'].count() >= 10)
+# Step 7: Filter to Include Only Popular Books and Active Users
+popular_books = merged_df.groupby('Title').filter(lambda x: x['Rating'].count() >= 20)
+active_users = popular_books.groupby('User_ID').filter(lambda x: x['Rating'].count() >= 20)
 
 # Display a sample of the popular books
 print("\nPopular Books Sample:\n", popular_books.head())
@@ -44,9 +46,14 @@ print("\nPopular Books Sample:\n", popular_books.head())
 # Step 8: Create a User-Item Matrix
 user_item_matrix = popular_books.pivot_table(index='User_ID', columns='Title', values='Rating').fillna(0)
 
+# Convert the user-item matrix to a sparse matrix
+user_item_sparse = csr_matrix(user_item_matrix.values)
+
 # Step 9: Calculate User Similarity Using Cosine Similarity
-user_similarity = cosine_similarity(user_item_matrix)
-user_similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
+user_similarity = cosine_similarity(user_item_sparse, dense_output=False)
+
+# Convert the sparse similarity matrix back to a DataFrame
+user_similarity_df = pd.DataFrame.sparse.from_spmatrix(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
 
 # Display the user similarity matrix sample
 print("\nUser Similarity Matrix Sample:\n", user_similarity_df.head())
@@ -71,7 +78,7 @@ def get_book_recommendations(user_id, num_recommendations=5):
     return books_to_recommend.head(num_recommendations)
 
 # Example: Get book recommendations for a specific user
-user_id = 276729  # Replace this with an existing User ID from your data
+user_id = 276747  # Replace this with an existing User ID from your data
 recommended_books = get_book_recommendations(user_id)
 
 # Display the recommendations
