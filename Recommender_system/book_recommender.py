@@ -78,7 +78,7 @@ def get_book_recommendations(user_id, num_recommendations=5):
     return books_to_recommend.head(num_recommendations)
 
 # Example: Get book recommendations for a specific user
-user_id = 276747  # Replace this with an existing User ID from your data
+user_id = '276747'
 recommended_books = get_book_recommendations(user_id)
 
 # Display the recommendations
