@@ -1,0 +1,6 @@
+vehicle_counts,average_speeds,weather_conditions,signal_timings,congestion_level
+100,40,sunny,30,1
+150,30,rainy,40,2
+200,35,sunny,50,1
+120,45,cloudy,20,2
+180,50,sunny,60,3
