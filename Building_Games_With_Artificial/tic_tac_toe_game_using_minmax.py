@@ -1,9 +1,12 @@
 import pygame
 import sys
 import numpy as np
+import random
+import time
 
 # Initialize pygame
 pygame.init()
+pygame.mixer.init()
 
 # Screen settings
 SCREEN_WIDTH = 600
@@ -14,12 +17,31 @@ LINE_COLOR = (23, 145, 135)
 CIRCLE_COLOR = (239, 231, 200)
 CROSS_COLOR = (84, 84, 84)
 
+# Sound effects
+click_sound = pygame.mixer.Sound('click.wav')
+win_sound = pygame.mixer.Sound('win.wav')
+draw_sound = pygame.mixer.Sound('draw.wav')
+
+# Sound functions
+def play_click_sound():
+    click_sound.play()
+
+def play_win_sound():
+    win_sound.play()
+
+def play_draw_sound():
+    draw_sound.play()
+
+
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Tic Tac Toe')
 
-# Create the board (3x3 grid filled with zeros)
+# Create the board
 board = np.zeros((3, 3))
+
+# Game stats
+stats = {"wins": 0, "losses": 0, "draws": 0}
 
 # Draw the grid lines
 def draw_grid():
@@ -29,7 +51,7 @@ def draw_grid():
     pygame.draw.line(screen, LINE_COLOR, (0, 200), (600, 200), LINE_WIDTH)
     pygame.draw.line(screen, LINE_COLOR, (0, 400), (600, 400), LINE_WIDTH)
 
-# Draw shapes with animation
+# Draw shapes on the board
 def draw_shapes():
     for row in range(3):
         for col in range(3):
@@ -40,6 +62,13 @@ def draw_shapes():
                                  (col * 200 + 200 - 55, row * 200 + 55), LINE_WIDTH)
                 pygame.draw.line(screen, CROSS_COLOR, (col * 200 + 55, row * 200 + 55),
                                  (col * 200 + 200 - 55, row * 200 + 200 - 55), LINE_WIDTH)
+
+# Display game stats
+def display_stats():
+    font = pygame.font.Font(None, 36)
+    text = f"Wins: {stats['wins']} | Losses: {stats['losses']} | Draws: {stats['draws']}"
+    text_surface = font.render(text, True, (255, 255, 255))
+    screen.blit(text_surface, (10, 10))
 
 # Check for a winner
 def check_winner():
@@ -55,6 +84,12 @@ def check_winner():
         return board[0][2]
     return None
 
+# Reset the board
+def reset_board():
+    global board, player_turn
+    board = np.zeros((3, 3))
+    player_turn = True
+
 # Minimax algorithm to calculate the best move for the AI
 def minimax(b, depth, is_maximizing):
     winner = check_winner()
@@ -64,6 +99,7 @@ def minimax(b, depth, is_maximizing):
         return depth - 10
     elif np.all(b != 0):
         return 0
+
     if is_maximizing:
         best_score = float('-inf')
         for row in range(3):
@@ -85,7 +121,39 @@ def minimax(b, depth, is_maximizing):
                     best_score = min(best_score, score)
         return best_score
 
-# Find the best move for the AI
+# AI move based on difficulty
+def ai_move(difficulty):
+    if difficulty == 'easy':
+        random_ai_move()
+    elif difficulty == 'medium':
+        limited_minimax_move()
+    else:
+        best_move()
+
+# Random AI move for Easy difficulty
+def random_ai_move():
+    empty_cells = [(row, col) for row in range(3) for col in range(3) if board[row][col] == 0]
+    if empty_cells:
+        row, col = random.choice(empty_cells)
+        board[row][col] = 2
+
+# Limited-depth Minimax for Medium difficulty
+def limited_minimax_move():
+    best_score = float('-inf')
+    move = None
+    for row in range(3):
+        for col in range(3):
+            if board[row][col] == 0:
+                board[row][col] = 2
+                score = minimax(board, 2, False)  # Limit depth to 2
+                board[row][col] = 0
+                if score > best_score:
+                    best_score = score
+                    move = (row, col)
+    if move:
+        board[move[0]][move[1]] = 2
+
+# Find the best move for Hard difficulty
 def best_move():
     best_score = float('-inf')
     move = None
@@ -101,36 +169,10 @@ def best_move():
     if move:
         board[move[0]][move[1]] = 2
 
-# Display winner message
-def display_winner(winner):
-    if winner == 1:
-        text = "You Win!"
-    elif winner == 2:
-        text = "AI Wins!"
-    else:
-        text = "It's a Draw!"
-
-    # Set the font and size
-    font = pygame.font.Font(None, 80)
-    text_surface = font.render(text, True, (255, 255, 255))
-    text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-
-    # Display the message
-    screen.blit(text_surface, text_rect)
-    pygame.display.update()
-    pygame.time.wait(3000)  # Wait for 3 seconds before resetting
-
-
-# Reset the board
-def reset_board():
-    global board, player_turn
-    board = np.zeros((3, 3))
-    player_turn = True
-
 # Main game loop
-
 running = True
 player_turn = True
+difficulty = input("Choose difficulty: Easy, Medium, or Hard: ").lower()
 
 while running:
     for event in pygame.event.get():
@@ -144,27 +186,29 @@ while running:
 
             if board[clicked_row][clicked_col] == 0:
                 board[clicked_row][clicked_col] = 1
+                play_click_sound()
                 player_turn = False
 
     if not player_turn:
-        best_move()
+        ai_move(difficulty)
         player_turn = True
 
-    # Check for a winner
     winner = check_winner()
     if winner is not None:
-        draw_grid()
-        draw_shapes()
-        display_winner(winner)
+        if winner == 1:
+            stats["wins"] += 1
+            play_win_sound()
+        elif winner == 2:
+            stats["losses"] += 1
+            play_win_sound()
         reset_board()
 
-    # Check for a draw
-    if np.all(board != 0) and winner is None:
-        draw_grid()
-        draw_shapes()
-        display_winner(None)  # Pass None to display the "It's a Draw!" message
+    if np.all(board != 0):
+        stats["draws"] += 1
+        play_draw_sound()
         reset_board()
 
     draw_grid()
     draw_shapes()
+    display_stats()
     pygame.display.update()
